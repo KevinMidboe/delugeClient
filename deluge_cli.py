@@ -4,7 +4,8 @@
 """Custom delugeRPC client
 Usage:
    deluge_cli add MAGNET [DIR] [--debug | --warning | --error]
-   deluge_cli get TORRENT
+   deluge_cli search NAME
+   deluge_cli get  TORRENT
    deluge_cli ls [--downloading | --seeding | --paused]
    deluge_cli toggle TORRENT
    deluge_cli rm TORRENT [--debug | --warning | --error]
@@ -26,10 +27,14 @@ Options:
 
 import argparse
 import os
+import re
 import signal
 import logging
 import logging.config
 import configparser
+
+from distutils.util import strtobool
+from pprint import pprint
 
 from deluge_client import DelugeRPCClient
 from docopt import docopt
@@ -52,6 +57,9 @@ logger.addHandler(ch)
 
 logger.addFilter(ColorizeFilter())   
 
+def split_words(string):
+   logger.debug('Splitting input: {} (type: {}) with split_words'.format(string, type(string)))
+   return re.findall(r"[\w\d']+", string.lower())
 
 class Deluge(object):
    """docstring for ClassName"""
@@ -74,36 +82,45 @@ class Deluge(object):
       self.client = DelugeRPCClient(self.host, self.port, self.user, self.password)
       self.client.connect()
 
-   def get(self, id):
-      response = self.client.call('core.get_torrent_status', id, {})
-      print(response)
-      return Torrent.fromDeluge(response) 
-      # return self.parseResponse(response)
-
    def ls(self, _filter=None):
-      if ('seeding' in _filter):
-         response = self.client.call('core.get_torrents_status', {'state': 'Seeding'}, [])
-      elif ('downloading' in _filter):
-         response = self.client.call('core.get_torrents_status', {'state': 'Downloading'}, [])
-      elif ('paused' in _filter):
-         response = self.client.call('core.get_torrents_status', {'paused': 'true'}, [])
+      if (type(_filter) is list):
+         if ('seeding' in _filter):
+            response = self.client.call('core.get_torrents_status', {'state': 'Seeding'}, [])
+         elif ('downloading' in _filter):
+            response = self.client.call('core.get_torrents_status', {'state': 'Downloading'}, [])
+         elif ('paused' in _filter):
+            response = self.client.call('core.get_torrents_status', {'paused': 'true'}, [])
       else:
          response = self.client.call('core.get_torrents_status', {}, [])
 
       return self.parseResponse(response)
 
-   def delete(self, id):
-      response = self.client.call('core.remove_torrent', id, False)
-      print('Response: ', response)
+   def search(self, query):
+      q_list = split_words(query)
+      return [ t for t in self.ls() if (set(q_list) <= set(split_words(t.name))) ]
 
-   def toggle(self, id):
-      torrent = self.ls(id)[0]
+   def get(self, id):
+      response = self.client.call('core.get_torrent_status', id, {})
+      return Torrent.fromDeluge(response)
+
+   def togglePaused(self, id):
+      torrent = self.get(id)
       if (torrent.paused):
          response = self.client.call('core.resume_torrent', [id])
       else:
          response = self.client.call('core.pause_torrent', [id])
       
       print('Response:', response)
+
+   def remove(self, name):
+      for torrent in self.ls():
+         if (name == torrent.name):
+            response = self.client.call('core.remove_torrent', torrent.id, False)
+            logger.info('Response: ', response)
+            break
+      
+      if (response == False):
+         raise AttributeError('Unable to remove torrent.')
 
    def status(self):
       response = self.client.call('core.get_torrents_status', {}, ['progress'])
@@ -122,21 +139,21 @@ class Torrent(object):
       self.finished = finished
       self.files = list(files)
 
-   def unpacked(self):
+   def packed(self):
       return len(self.files) > 1
 
    @classmethod
    def fromDeluge(cls, d):
+      # Receive a dict with byte values, convert all elements to string values
       d = convert(d)
-      from pprint import pprint
-      pprint(d)
+      d['paused'] = True if strtobool(d['paused']) else False
       return cls(d['hash'], d['name'], d['progress'], d['eta'], d['save_path'], d['state'], 
                  d['paused'], d['is_finished'], d['files'])
 
    def toJSON(self):
       return {'Key': self.key, 'Name': self.name, 'Progress': self.progress, 'ETA': self.eta,
               'Save path': self.save_path, 'State': self.state, 'Paused': self.paused,
-              'Finished': self.finished, 'Files': self.files, 'unpacked': self.unpacked()}
+              'Finished': self.finished, 'Files': self.files, 'Packed': self.packed()}
 
    def __str__(self):
       return "Name: {}, Progress: {}%, ETA: {}, State: {}, Paused: {}".format(
@@ -173,44 +190,50 @@ def main():
 
    arguments = docopt(__doc__, version='1')
 
+   # Set logging level for streamHandler
    if arguments['--debug']:
-      # logger.level = logging.DEBUG
       ch.setLevel(logging.DEBUG)
    elif arguments['--warning']:
-      # logger.level = logging.WARNING
       ch.setLevel(logging.WARNING)
    elif arguments['--error']:
-      # logger.level = logging.ERROR
       ch.setLevel(logging.ERROR)
 
    logger.info('Deluge client')
    logger.debug(arguments)
 
-   # Fetch config
+   # Get config settings
    config_settings = getConfig()
    deluge = Deluge(config=config_settings)
 
-   # arg_text, arg_user, arg_msg = arguments['<text>'], arguments['<user>'], arguments['<msg>']
    _id = arguments['TORRENT']
+   query = arguments['NAME']
    _filter = [ a[2:] for a in ['--downloading', '--seeding', '--paused'] if arguments[a] ]
-   print(_id, _filter)
+   print(_id, query, _filter)
 
    if arguments['add'] and arg_text:
       logger.info('Add cmd selected')
+
+   elif arguments['search']:
+      logger.info('Search cmd selected for query: {}'.format(query))
+      response = deluge.search(query)
+      [ pprint(t.toJSON()) for t in response ]
+
    elif arguments['get']:
-      logger.info('Get cmd selected for id: ', _id)
+      logger.info('Get cmd selected for id: {}'.format(_id))
       response = deluge.get(_id)
       pprint(response.toJSON())
+
    elif arguments['ls']:
       logger.info('List cmd selected')
-      from pprint import pprint
       [ pprint(t.toJSON()) for t in deluge.ls(_filter=_filter) ]
+
    elif arguments['toggle']:
       logger.info('Toggling id: {}'.format(_id))
-      deluge.toggle(_id)
+      deluge.togglePaused(_id)
+
    elif arguments['rm']:
-      logger.info('Deleting id: {}'.format(_id))
-      deluge.delete(_id)
+      logger.info('Remove id: {}'.format(_id))
+      deluge.remove(_id)
 
 if __name__ == '__main__':
    main()
