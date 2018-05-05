@@ -1,21 +1,46 @@
-# Deluge Client
+<h1 align="center">
+  🐍 Python Deluge CLI
+</h1>
 
-## Idea
+<h4 align="center"> A easy to use Deluge CLI that can connect to Deluge RPC (even over ssh) written entirely in python.</h4>
+
+<p align="center">
+  <a href="https://snyk.io/test/github/kevinmidboe/delugeclient?targetFile=requirements.txt">
+  	<img src="https://snyk.io/test/github/kevinmidboe/delugeclient/badge.svg?targetFile=requirements.txt" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/kevinmidboe/delugeclient?targetFile=requirements.txt" style="max-width:100%;">
+  </a>
+  
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="">
+  </a>
+</p>
+
+<p align="center">
+  <a href="#abstract">Abstract</a> •
+  <a href="#setup_virtualenv">Setup virtualenv</a> •
+  <a href="#configure">Configure</a> •
+  <a href="#installation">Install dependencies</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#running">Running</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+
+## <a name="abstract"></a> Abstract
 Create a deluge python client for interfacing with deluge for common tasks like listing, adding, removing and setting download directory for torrents. 
 
-<a name='setup_a_virtual_enviroment'></a>
-## Setup a Virtual Environment
+
+## <a name="setup_virtualenv"></a> Setup Virtual Environment
 Virtual environment allows us to create a local environment for the requirements needed. Because pip does not download packages already downloaded to your system, we can use virtualenv to save our packages in the project folder.
 
-<a name='env_installation'></a>
-### Installation
+
+### <a name="installation"></a> Installation
 To install virtualenv, simply run:  
 
 ```
  $ pip install virutalenv
 ```
 
-<a name='env_usage'></a>
+
 ### Usage
 After you have downloaded this project go to it in your terminal by going to the folder you downloaded and typing the following:
 
@@ -55,8 +80,8 @@ The leave our virtual environment run:
  $ deactivate
 ```
 
-<a name='configure_config_file'></a>
-## Configure the Config File
+
+## <a name="configure"></a> Configure the Config File
 
 The following is where we need to do some manual editing of our config file. Open to ```config.ini``` in your favorite text editor. 
 
@@ -71,8 +96,8 @@ Then you need to change the HOST and PORT to reflect the address for your deluge
  $ cat /home/USER/.config/deluge/auth
 ```
 
-<a name='install_requirements'></a>
-## Install Required Dependencies
+
+## <a name="install"></a> Install Required Dependencies
 Now that we have our virutalenv set up and activated we want to install all the necessary packages listed in `requirements.txt`. To install it's dependencies do the following:
 
 ```
@@ -82,8 +107,7 @@ Now that we have our virutalenv set up and activated we want to install all the 
 Now we have our neccessary packages installed!
 
 
-<a name='usage'></a>
-## Usage
+## <a name="usage"></a> Usage
 
 ```
 Custom delugeRPC client
@@ -109,11 +133,17 @@ Options:
    --error       Print error messages (Error/Warning)
 ```
 
-<a name='usage_running'></a>
-### Running
+### <a name="running"></a> Running
 To interface with deluged :
 
 ```
  $ ./deluge_cli.py ls
 ```
 
+
+## <a name="contributing"></a> Contributing
+- Fork it!
+- Create your feature branch: git checkout -b my-new-feature
+- Commit your changes: git commit -am 'Add some feature'
+- Push to the branch: git push origin my-new-feature
+- Submit a pull request
