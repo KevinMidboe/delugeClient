@@ -29,6 +29,7 @@ import argparse
 import os
 import re
 import signal
+import socket
 import logging
 import logging.config
 import configparser
@@ -37,6 +38,7 @@ from distutils.util import strtobool
 from pprint import pprint
 
 from deluge_client import DelugeRPCClient
+from sshtunnel import SSHTunnelForwarder
 from docopt import docopt
 from utils import ColorizeFilter, convert
 
@@ -68,6 +70,14 @@ class Deluge(object):
       self.port = int(config['Deluge']['PORT'])
       self.user = config['Deluge']['USER']
       self.password = config['Deluge']['PASSWORD']
+
+      self.ssh_host = config['ssh']['HOST']
+      self.ssh_user = config['ssh']['USER']
+      self.ssh_pkey = config['ssh']['PKEY']
+
+      # self.ssh_host = config['ssh']['HOST']
+      # self.ssh_user = config['ssh']['USER']
+      # self.ssh_pkey = config['ssh']['PKEY']
       self._connect()
 
    def parseResponse(self, response):
@@ -78,7 +88,12 @@ class Deluge(object):
       return torrents
 
    def _connect(self):
-      print(self.host, self.port, self.user, self.password)
+      logger.info('Checking if script on same server as deluge RPC')
+      if (socket.gethostbyname(socket.gethostname()) != self.host):
+         self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_pkey=self.ssh_pkey, 
+            local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
+         self.tunnel.start()
+
       self.client = DelugeRPCClient(self.host, self.port, self.user, self.password)
       self.client.connect()
 
@@ -87,7 +102,7 @@ class Deluge(object):
          return self.client.call('core.add_torrent_magnet', url, {})
 
    def ls(self, _filter=None):
-      if (type(_filter) is list):
+      if (type(_filter) is list and len(_filter)):
          if ('seeding' in _filter):
             response = self.client.call('core.get_torrents_status', {'state': 'Seeding'}, [])
          elif ('downloading' in _filter):
@@ -129,6 +144,11 @@ class Deluge(object):
    def status(self):
       response = self.client.call('core.get_torrents_status', {}, ['progress'])
       torrents = self.parseResponse(response)
+
+   def __del__(self):
+      if hasattr(self, 'tunnel'):
+         logger.info('Closing ssh tunnel')
+         self.tunnel.stop()
 
 class Torrent(object):
    def __init__(self, key, name, progress, eta, save_path, state, paused, finished, files):
@@ -174,6 +194,8 @@ def getConfig():
    config.read(config_dir)
 
    config_values = list(dict(config.items('Deluge')).values())
+   config_values.extend(list(dict(config.items('ssh')).values()))
+
    if any(value.startswith('YOUR') for value in config_values):
       raise ValueError('Please set variables in config.ini file.')
 
