@@ -82,6 +82,10 @@ class Deluge(object):
       self.client = DelugeRPCClient(self.host, self.port, self.user, self.password)
       self.client.connect()
 
+   def add(self, url):
+      if (url.startswith('magnet')):
+         return self.client.call('core.add_torrent_magnet', url, {})
+
    def ls(self, _filter=None):
       if (type(_filter) is list):
          if ('seeding' in _filter):
@@ -207,11 +211,14 @@ def main():
 
    _id = arguments['TORRENT']
    query = arguments['NAME']
+   magnet = arguments['MAGNET']
    _filter = [ a[2:] for a in ['--downloading', '--seeding', '--paused'] if arguments[a] ]
    print(_id, query, _filter)
 
-   if arguments['add'] and arg_text:
-      logger.info('Add cmd selected')
+   if arguments['add']:
+      logger.info('Add cmd selected with link {}'.format(magnet))
+      response = deluge.add(magnet)
+      print('Add response: ', response)
 
    elif arguments['search']:
       logger.info('Search cmd selected for query: {}'.format(query))
