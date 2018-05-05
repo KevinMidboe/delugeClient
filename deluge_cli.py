@@ -74,10 +74,7 @@ class Deluge(object):
       self.ssh_host = config['ssh']['HOST']
       self.ssh_user = config['ssh']['USER']
       self.ssh_pkey = config['ssh']['PKEY']
-
-      # self.ssh_host = config['ssh']['HOST']
-      # self.ssh_user = config['ssh']['USER']
-      # self.ssh_pkey = config['ssh']['PKEY']
+   
       self._connect()
 
    def parseResponse(self, response):
