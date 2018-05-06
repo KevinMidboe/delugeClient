@@ -98,7 +98,7 @@ class Deluge(object):
       if (url.startswith('magnet')):
          return self.client.call('core.add_torrent_magnet', url, {})
 
-   def ls(self, _filter=None):
+   def get_all(self, _filter=None):
       if (type(_filter) is list and len(_filter)):
          if ('seeding' in _filter):
             response = self.client.call('core.get_torrents_status', {'state': 'Seeding'}, [])
@@ -113,7 +113,7 @@ class Deluge(object):
 
    def search(self, query):
       q_list = split_words(query)
-      return [ t for t in self.ls() if (set(q_list) <= set(split_words(t.name))) ]
+      return [ t for t in self.get_all() if (set(q_list) <= set(split_words(t.name))) ]
 
    def get(self, id):
       response = self.client.call('core.get_torrent_status', id, {})
@@ -128,15 +128,17 @@ class Deluge(object):
       
       print('Response:', response)
 
-   def remove(self, name):
-      for torrent in self.ls():
-         if (name == torrent.name):
-            response = self.client.call('core.remove_torrent', torrent.id, False)
-            logger.info('Response: ', response)
-            break
-      
-      if (response == False):
-         raise AttributeError('Unable to remove torrent.')
+   def remove(self, torrent_id):
+      for torrent in self.get_all():
+         if (torrent_id == torrent.key):
+            response = self.client.call('core.remove_torrent', torrent.key, False)
+            logger.info('Response: {}'.format(str(response)))
+            
+            if (response == False):
+               raise AttributeError('Unable to remove torrent.')
+            return response
+
+      logger.error('ERROR: No torrent found with that id.')
 
    def status(self):
       response = self.client.call('core.get_torrents_status', {}, ['progress'])
@@ -251,7 +253,7 @@ def main():
 
    elif arguments['ls']:
       logger.info('List cmd selected')
-      [ pprint(t.toJSON()) for t in deluge.ls(_filter=_filter) ]
+      [ pprint(t.toJSON()) for t in deluge.get_all(_filter=_filter) ]
 
    elif arguments['toggle']:
       logger.info('Toggling id: {}'.format(_id))
