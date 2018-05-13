@@ -42,7 +42,7 @@ from pprint import pprint
 from deluge_client import DelugeRPCClient
 from sshtunnel import SSHTunnelForwarder
 from docopt import docopt
-from utils import ColorizeFilter, convert
+from .utils import ColorizeFilter, convert
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -61,13 +61,33 @@ logger.addHandler(ch)
 
 logger.addFilter(ColorizeFilter())   
 
+
+def getConfig():
+   """
+   Read path and get configuartion file with site settings
+   :return: config settings read from 'config.ini'
+   :rtype: configparser.ConfigParser
+   """
+   config = configparser.ConfigParser()
+   config_dir = os.path.join(BASE_DIR, 'config.ini')
+   config.read(config_dir)
+
+   config_values = list(dict(config.items('Deluge')).values())
+   config_values.extend(list(dict(config.items('ssh')).values()))
+
+   if any(value.startswith('YOUR') for value in config_values):
+      raise ValueError('Please set variables in config.ini file.')
+
+   return config
+
 def split_words(string):
    logger.debug('Splitting input: {} (type: {}) with split_words'.format(string, type(string)))
    return re.findall(r"[\w\d']+", string.lower())
 
 class Deluge(object):
    """docstring for ClassName"""
-   def __init__(self, config=None):
+   def __init__(self):
+      config = getConfig()
       self.host = config['Deluge']['HOST']
       self.port = int(config['Deluge']['PORT'])
       self.user = config['Deluge']['USER']
@@ -212,24 +232,6 @@ class Torrent(object):
       return "Name: {}, Progress: {}%, ETA: {}, State: {}, Paused: {}".format(
          self.name, self.progress, self.eta, self.state, self.paused)
 
-def getConfig():
-   """
-   Read path and get configuartion file with site settings
-   :return: config settings read from 'config.ini'
-   :rtype: configparser.ConfigParser
-   """
-   config = configparser.ConfigParser()
-   config_dir = os.path.join(BASE_DIR, 'config.ini')
-   config.read(config_dir)
-
-   config_values = list(dict(config.items('Deluge')).values())
-   config_values.extend(list(dict(config.items('ssh')).values()))
-
-   if any(value.startswith('YOUR') for value in config_values):
-      raise ValueError('Please set variables in config.ini file.')
-
-   return config
-
 def signal_handler(signal, frame):
    """
    Handle exit by Keyboardinterrupt
@@ -257,8 +259,7 @@ def main():
    logger.debug(arguments)
 
    # Get config settings
-   config_settings = getConfig()
-   deluge = Deluge(config=config_settings)
+   deluge = Deluge()
 
    _id = arguments['TORRENT']
    query = arguments['NAME']
