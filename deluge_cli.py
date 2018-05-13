@@ -8,7 +8,8 @@ Usage:
    deluge_cli get  TORRENT
    deluge_cli ls [--downloading | --seeding | --paused]
    deluge_cli toggle TORRENT
-   deluge_cli rm TORRENT [--debug | --warning | --error]
+   deluge_cli progress
+   deluge_cli rm NAME [--debug | --warning | --error]
    deluge_cli (-h | --help)
    deluge_cli --version
 
@@ -27,6 +28,7 @@ Options:
 
 import argparse
 import os
+import sys
 import re
 import signal
 import socket
@@ -128,21 +130,46 @@ class Deluge(object):
       
       print('Response:', response)
 
-   def remove(self, torrent_id):
-      for torrent in self.get_all():
-         if (torrent_id == torrent.key):
-            response = self.client.call('core.remove_torrent', torrent.key, False)
-            logger.info('Response: {}'.format(str(response)))
-            
-            if (response == False):
-               raise AttributeError('Unable to remove torrent.')
-            return response
+   def remove(self, name):
+      matches = list(filter(lambda t: t.name == name, self.get_all()))
+      logger.info('Matches for {}: {}'.format(name, matches))
+      
+      if (len(matches) > 1):
+         raise ValueError('Multiple files found matching key. Unable to remove.')
+      elif (len(matches) == 1):
+         torrent = matches[0]
+         response = self.client.call('core.remove_torrent', torrent.key, False)
+         logger.info('Response: {}'.format(str(response)))
 
-      logger.error('ERROR: No torrent found with that id.')
+         if (response == False):
+            raise AttributeError('Unable to remove torrent.')
+         return response
+      else:
+         logger.error('ERROR. No torrent found with that name.')
 
-   def status(self):
-      response = self.client.call('core.get_torrents_status', {}, ['progress'])
-      torrents = self.parseResponse(response)
+   def filterOnValue(self, torrents, value):
+      filteredTorrents = []
+      value_template = {'key': None, 'name': None, value: None}
+      for t in torrents:
+         value_template['key'] = t.key
+         value_template['name'] = t.name
+         value_template[value] = getattr(t, value)
+         
+         filteredTorrents.append(value_template)
+      return filteredTorrents
+
+   def progress(self):
+      attributes = ['progress', 'eta', 'state']
+      all_torrents = self.get_all()
+
+      torrents = []
+      for i, attribute in enumerate(attributes):
+         if i < 1:
+            torrents = self.filterOnValue(all_torrents, attribute)
+            continue
+         torrents = [dict(e, **v) for e,v in zip(torrents, self.filterOnValue(all_torrents, attribute))]
+
+      return torrents
 
    def __del__(self):
       if hasattr(self, 'tunnel'):
@@ -174,9 +201,9 @@ class Torrent(object):
                  d['paused'], d['is_finished'], d['files'])
 
    def toJSON(self):
-      return {'Key': self.key, 'Name': self.name, 'Progress': self.progress, 'ETA': self.eta,
-              'Save path': self.save_path, 'State': self.state, 'Paused': self.paused,
-              'Finished': self.finished, 'Files': self.files, 'Packed': self.packed()}
+      return {'key': self.key, 'name': self.name, 'progress': self.progress, 'eta': self.eta,
+              'save path': self.save_path, 'state': self.state, 'paused': self.paused,
+              'finished': self.finished, 'files': self.files, 'packed': self.packed()}
 
    def __str__(self):
       return "Name: {}, Progress: {}%, ETA: {}, State: {}, Paused: {}".format(
@@ -233,6 +260,7 @@ def main():
    _id = arguments['TORRENT']
    query = arguments['NAME']
    magnet = arguments['MAGNET']
+   name = arguments['NAME']
    _filter = [ a[2:] for a in ['--downloading', '--seeding', '--paused'] if arguments[a] ]
    print(_id, query, _filter)
 
@@ -245,6 +273,12 @@ def main():
       logger.info('Search cmd selected for query: {}'.format(query))
       response = deluge.search(query)
       [ pprint(t.toJSON()) for t in response ]
+
+   elif arguments['progress']:
+      logger.info('Progress cmd selected.')
+      pprint(deluge.progress())
+      exit(0)
+      [ pprint(t.toJSON()) for t in deluge.progress() ]
 
    elif arguments['get']:
       logger.info('Get cmd selected for id: {}'.format(_id))
@@ -260,8 +294,8 @@ def main():
       deluge.togglePaused(_id)
 
    elif arguments['rm']:
-      logger.info('Remove id: {}'.format(_id))
-      deluge.remove(_id)
+      logger.info('Remove by name: {}'.format(name))
+      deluge.remove(name)
 
 if __name__ == '__main__':
    main()
