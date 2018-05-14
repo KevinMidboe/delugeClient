@@ -49,7 +49,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 logger = logging.getLogger('deluge_cli')
 logger.setLevel(logging.DEBUG)
 
-fh = logging.FileHandler('deluge_cli.log')
+fh = logging.FileHandler(os.path.join(BASE_DIR, 'deluge_cli.log'))
 fh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.ERROR)
