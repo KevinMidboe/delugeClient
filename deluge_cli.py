@@ -148,7 +148,7 @@ class Deluge(object):
       else:
          response = self.client.call('core.pause_torrent', [id])
       
-      print('Response:', response)
+      return response
 
    def remove(self, name):
       matches = list(filter(lambda t: t.name == name, self.get_all()))
@@ -163,6 +163,7 @@ class Deluge(object):
 
          if (response == False):
             raise AttributeError('Unable to remove torrent.')
+            
          return response
       else:
          logger.error('ERROR. No torrent found with that name.')
@@ -282,9 +283,8 @@ def main(arg):
 
    elif arguments['progress']:
       logger.info('Progress cmd selected.')
-      pprint(deluge.progress())
-      exit(0)
-      [ pprint(t.toJSON()) for t in deluge.progress() ]
+      response = deluge.progress()
+      [ pprint(t.toJSON()) for t in response ]
       return response
 
    elif arguments['get']:
@@ -295,17 +295,20 @@ def main(arg):
 
    elif arguments['ls']:
       logger.info('List cmd selected')
-      [ pprint(t.toJSON()) for t in deluge.get_all(_filter=_filter) ]
+      response = deluge.get_all(_filter=_filter)
+      [ pprint(t.toJSON()) for t in response ]
       return response
 
    elif arguments['toggle']:
       logger.info('Toggling id: {}'.format(_id))
-      deluge.togglePaused(_id)
+      response = deluge.togglePaused(_id)
+      print('toggle response: ', response)
       return response
 
    elif arguments['rm']:
       logger.info('Remove by name: {}'.format(name))
-      deluge.remove(name)
+      response = deluge.remove(name)
+      print('rm response: ', response)
       return response
 
 if __name__ == '__main__':
