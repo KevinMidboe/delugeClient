@@ -30,7 +30,7 @@ async def deluge(websocket, path):
 			print('sending response')
 			last_msg = downloading
 
-		await.asyncio.sleep(1)
+		await asyncio.sleep(1)
 
 serve_hello = websockets.serve(hello, '0.0.0.0', 8765)
 # serve_time = websockets.serve(time, '0.0.0.0', 5678)
