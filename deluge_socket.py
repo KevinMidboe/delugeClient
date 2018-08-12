@@ -22,8 +22,8 @@ async def time(websocket, path):
 
 
 async def deluge(websocket, path):
-	downloading = deluge.main(['ls', '--downloading'])
-	await websocket.send()
+	downloading = deluge_cli.main(['ls', '--downloading'])
+	await websocket.send(downloading)
 
 serve_hello = websockets.serve(hello, '0.0.0.0', 8765)
 # serve_time = websockets.serve(time, '0.0.0.0', 5678)
