@@ -272,34 +272,41 @@ def main(arg):
       logger.info('Add cmd selected with link {}'.format(magnet))
       response = deluge.add(magnet)
       print('Add response: ', response)
+      return response
 
    elif arguments['search']:
       logger.info('Search cmd selected for query: {}'.format(query))
       response = deluge.search(query)
       [ pprint(t.toJSON()) for t in response ]
+      return response
 
    elif arguments['progress']:
       logger.info('Progress cmd selected.')
       pprint(deluge.progress())
       exit(0)
       [ pprint(t.toJSON()) for t in deluge.progress() ]
+      return response
 
    elif arguments['get']:
       logger.info('Get cmd selected for id: {}'.format(_id))
       response = deluge.get(_id)
       pprint(response.toJSON())
+      return response
 
    elif arguments['ls']:
       logger.info('List cmd selected')
       [ pprint(t.toJSON()) for t in deluge.get_all(_filter=_filter) ]
+      return response
 
    elif arguments['toggle']:
       logger.info('Toggling id: {}'.format(_id))
       deluge.togglePaused(_id)
+      return response
 
    elif arguments['rm']:
       logger.info('Remove by name: {}'.format(name))
       deluge.remove(name)
+      return response
 
 if __name__ == '__main__':
    main()
