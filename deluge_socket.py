@@ -19,8 +19,8 @@ async def time(websocket, path):
 		await asyncio.sleep(1)
 
 
-serve_hello = websockets.serve(hello, 'localhost', 8765)
-serve_time = websockets.serve(time, 'localhost', 5678)
+serve_hello = websockets.serve(hello, '0.0.0.0', 8765)
+serve_time = websockets.serve(time, '0.0.0.0', 5678)
 
 asyncio.get_event_loop().run_until_complete(serve_hello)
 asyncio.get_event_loop().run_until_complete(serve_time)
