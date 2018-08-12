@@ -4,13 +4,18 @@
         <title>WebSocket demo</title>
     </head>
     <body>
+        <input placeholder="Your name here"></input>
+        <button onclick="sendMessage()">Send message</button>
+        <br />
         <span>Message from server: </span>
+        <span id="response"></span>
 
         <script>
+        function sendMessage() {
             let ws = new WebSocket("ws://localhost:8765/")
             let test = 'hello'
             ws.onopen = function (event) {
-                ws.send("Kevin");
+                ws.send(document.getElementsByTagName('input')[0].value);
             }
             ws.onerror = function() {
                 console.error("error");
@@ -20,8 +25,9 @@
             }
             ws.onmessage = function (event) {
                 let server_resp = event.data;
-                document.getElementsByTagName('span')[0].innerHTML += server_resp;
-            }
+                document.getElementById('response').textContent= server_resp;
+            }   
+        }
         </script>
         <script>
             let ws_time = new WebSocket("ws://localhost:5678/"),
