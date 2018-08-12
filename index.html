@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>WebSocket demo</title>
+    </head>
+    <body>
+        <span>Message from server: </span>
+
+        <script>
+            let ws = new WebSocket("ws://localhost:8765/")
+            let test = 'hello'
+            ws.onopen = function (event) {
+                ws.send("Kevin");
+            }
+            ws.onerror = function() {
+                console.error("error");
+            }
+            ws.onclose = function() {
+                console.log("closed");
+            }
+            ws.onmessage = function (event) {
+                let server_resp = event.data;
+                document.getElementsByTagName('span')[0].innerHTML += server_resp;
+            }
+        </script>
+        <script>
+            let ws_time = new WebSocket("ws://localhost:5678/"),
+                messages = document.createElement('ul');
+            ws_time.onmessage = function (event) {
+                let messages = document.getElementsByTagName('ul')[0],
+                    message = document.createElement('li'),
+                    content = document.createTextNode(event.data);
+                message.appendChild(content);
+                messages.appendChild(message);
+            };
+            document.body.appendChild(messages);
+        </script>
+    </body>
+</html>
