@@ -23,14 +23,9 @@ async def time(websocket, path):
 
 
 async def deluge(websocket, path):
-	last_msg = []
 	while True:
 		downloading = deluge_cli.main(['progress'])
-
-		if downloading is not last_msg:
-			await websocket.send(json.dumps(downloading))
-			print('sending response')
-			last_msg = downloading
+		await websocket.send(json.dumps(downloading))
 
 		await asyncio.sleep(1)
 
