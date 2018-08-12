@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import random
 import websockets
+import json
 
 import deluge_cli
 
@@ -22,18 +23,18 @@ async def time(websocket, path):
 
 
 async def deluge(websocket, path):
-	last_msg = None
-	downloading = deluge_cli.main(['ls', '--downloading'])
+	last_msg = []
 	while True:
-		if downloading != last_msg:
-			await websocket.send(str(downloading))
+		downloading = deluge_cli.main(['progress'])
+
+		if downloading is not last_msg:
+			await websocket.send(json.dumps(downloading))
 			print('sending response')
 			last_msg = downloading
 
 		await asyncio.sleep(1)
 
 serve_hello = websockets.serve(hello, '0.0.0.0', 8765)
-# serve_time = websockets.serve(time, '0.0.0.0', 5678)
 serve_deluge = websockets.serve(deluge, '0.0.0.0', 5678)
 
 asyncio.get_event_loop().run_until_complete(serve_hello)

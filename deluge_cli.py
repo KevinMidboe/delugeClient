@@ -31,6 +31,7 @@ import os
 import sys
 import re
 import signal
+import json
 import socket
 import logging
 import logging.config
@@ -240,7 +241,7 @@ def signal_handler(signal, frame):
    logger.info('\nGood bye!')
    sys.exit(0)
 
-def main(arg):
+def main(arg=None):
    """
    Main function, parse the input
    """
@@ -284,7 +285,8 @@ def main(arg):
    elif arguments['progress']:
       logger.info('Progress cmd selected.')
       response = deluge.progress()
-      [ pprint(t.toJSON()) for t in response ]
+      print(response)
+      # [ pprint(t.toJSON()) for t in response ]
       return response
 
    elif arguments['get']:
@@ -296,8 +298,9 @@ def main(arg):
    elif arguments['ls']:
       logger.info('List cmd selected')
       response = deluge.get_all(_filter=_filter)
-      [ pprint(t.toJSON()) for t in response ]
-      return response
+      response = [t.toJSON() for t in response]
+      # pprint(response)
+      return json.dumps(response)
 
    elif arguments['toggle']:
       logger.info('Toggling id: {}'.format(_id))
