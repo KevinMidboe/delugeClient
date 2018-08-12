@@ -42,7 +42,7 @@ from pprint import pprint
 from deluge_client import DelugeRPCClient
 from sshtunnel import SSHTunnelForwarder
 from docopt import docopt
-from .utils import ColorizeFilter, convert
+from utils import ColorizeFilter, convert
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -239,13 +239,13 @@ def signal_handler(signal, frame):
    logger.info('\nGood bye!')
    sys.exit(0)
 
-def main():
+def main(arg):
    """
    Main function, parse the input
    """
    signal.signal(signal.SIGINT, signal_handler)
 
-   arguments = docopt(__doc__, version='1')
+   arguments = docopt(__doc__, argv=arg, version='1')
 
    # Set logging level for streamHandler
    if arguments['--debug']:
