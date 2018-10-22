@@ -96,6 +96,7 @@ class Deluge(object):
 
       self.ssh_host = config['ssh']['HOST']
       self.ssh_user = config['ssh']['USER']
+      self.ssh_password = config['ssh']['PASSWORD']
       self.ssh_pkey = config['ssh']['PKEY']
    
       self._connect()
@@ -110,8 +111,12 @@ class Deluge(object):
    def _connect(self):
       logger.info('Checking if script on same server as deluge RPC')
       if (socket.gethostbyname(socket.gethostname()) != self.host):
-         self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_pkey=self.ssh_pkey, 
-            local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
+         if (self.ssh_password):
+            self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_password=self.ssh_password,
+               local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
+         else:
+            self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_pkey=self.ssh_pkey, 
+               local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
          self.tunnel.start()
 
       self.client = DelugeRPCClient(self.host, self.port, self.user, self.password)
