@@ -6,7 +6,6 @@ cryptography==2.3
 deluge-client==1.6.0
 docopt==0.6.2
 idna==2.7
-paramiko==2.4.1
 pyasn1==0.4.4
 pycparser==2.18
 PyNaCl==1.2.1
