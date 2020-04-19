@@ -9,7 +9,7 @@ Usage:
    deluge_cli ls [--downloading | --seeding | --paused]
    deluge_cli toggle TORRENT
    deluge_cli progress
-   deluge_cli rm NAME [--debug | --warning | --error]
+   deluge_cli rm NAME [--destroy] [--debug | --warning | --error]
    deluge_cli (-h | --help)
    deluge_cli --version
 
@@ -150,7 +150,7 @@ class Deluge(object):
       
       print('Response:', response)
 
-   def remove(self, name):
+   def remove(self, name, destroy=False):
       matches = list(filter(lambda t: t.name == name, self.get_all()))
       logger.info('Matches for {}: {}'.format(name, matches))
       
@@ -158,7 +158,7 @@ class Deluge(object):
          raise ValueError('Multiple files found matching key. Unable to remove.')
       elif (len(matches) == 1):
          torrent = matches[0]
-         response = self.client.call('core.remove_torrent', torrent.key, False)
+         response = self.client.call('core.remove_torrent', torrent.key, destroy)
          logger.info('Response: {}'.format(str(response)))
 
          if (response == False):
@@ -298,8 +298,11 @@ def main():
       deluge.togglePaused(_id)
 
    elif arguments['rm']:
-      logger.info('Remove by name: {}'.format(name))
-      deluge.remove(name)
+      destroy = arguments['--destroy']
+      logger.info('Remove by name: {}.'.format(name))
+      if destroy:
+         logger.info('Destroy set, removing files')
+      deluge.remove(name, destroy)
 
 if __name__ == '__main__':
    main()
