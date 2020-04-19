@@ -42,7 +42,7 @@ from pprint import pprint
 from deluge_client import DelugeRPCClient
 from sshtunnel import SSHTunnelForwarder
 from docopt import docopt
-from .utils import ColorizeFilter, convert
+from utils import ColorizeFilter, convert
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
