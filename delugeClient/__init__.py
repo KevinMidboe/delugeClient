@@ -1,11 +1,13 @@
+import os
 from sys import path
-from os.path import dirname
 
-path.append(dirname(__file__))
+path.append(os.path.dirname(__file__))
 
 __version__=0.1
 
 import logging
+from delugeUtils import BASE_DIR
+
 logger = logging.getLogger('deluge_cli')
 logger.setLevel(logging.DEBUG)
 

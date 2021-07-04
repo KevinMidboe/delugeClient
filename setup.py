@@ -1,8 +1,5 @@
 from setuptools import setup, find_packages
-from sys import path
-from os.path import dirname
 
-path.append(dirname(__file__))
 import delugeClient
 
 with open("README.md", "r", encoding="utf-8") as fh:
