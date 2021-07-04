@@ -1,10 +1,14 @@
-import setuptools
+from setuptools import setup, find_packages
+from sys import path
+from os.path import dirname
+
+path.append(dirname(__file__))
 import delugeClient
 
 with open("README.md", "r", encoding="utf-8") as fh:
   long_description = fh.read()
 
-setuptools.setup(
+setup(
   name="delugeClient",
   version=delugeClient.__version__,
   author="KevinMidboe",
@@ -27,10 +31,12 @@ setuptools.setup(
   ],
   entry_points={
     'console_scripts': [
-      'delugeClient = delugeClient.__main__:main',
+      'delugeclient = delugeClient.__main__:main',
    ],
   },
-  package_dir={"": "delugeClient"},
-  packages=setuptools.find_packages(where="delugeClient"),
+  packages=find_packages(),
+  package_data={
+    'delugeClient': ['default_config.ini'],
+  },
   python_requires=">=3.6",
 )
