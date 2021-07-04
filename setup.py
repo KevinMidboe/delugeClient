@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
   long_description = fh.read()
 
 setup(
-  name="delugeClient",
+  name="delugeClient-kevin",
   version=delugeClient.__version__,
   author="KevinMidboe",
   description="Deluge client with custom functions written in python",
