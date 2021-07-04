@@ -13,19 +13,12 @@ setuptools.setup(
   long_description_content_type="text/markdown",
   url="https://github.com/kevinmidboe/delugeClient",
   install_requires=[
-    'asn1crypto==0.24.0',
-    'bcrypt==3.1.4',
-    'colored==1.3.5',
-    'cryptography==2.5',
-    'deluge-client==1.6.0',
+    'colored==1.4.2',
+    'deluge-client==1.9.0',
     'docopt==0.6.2',
-    'idna==2.7',
-    'pyasn1==0.4.4',
-    'pycparser==2.18',
-    'PyNaCl==1.2.1',
-    'six==1.11.0',
-    'sshtunnel==0.1.4',
-    'websockets==6.0'
+    'requests==2.25.1',
+    'sshtunnel==0.4.0',
+    'websockets==9.1'
   ],
   classifiers=[
     'Programming Language :: Python',
