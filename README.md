@@ -5,6 +5,9 @@
 <h4 align="center"> A easy to use Deluge CLI that can connect to Deluge RPC (even over ssh) written entirely in python.</h4>
 
 <p align="center">
+  <a href="https://pypi.org/project/delugeClient-kevin/">
+    <img src="https://img.shields.io/pypi/v/delugeClient-kevin" />
+  </a>
   <a href="https://snyk.io/test/github/kevinmidboe/delugeclient?targetFile=requirements.txt">
   	<img src="https://snyk.io/test/github/kevinmidboe/delugeclient/badge.svg?targetFile=requirements.txt" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/kevinmidboe/delugeclient?targetFile=requirements.txt" style="max-width:100%;">
   </a>
