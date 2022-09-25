@@ -6,7 +6,7 @@ path.append(os.path.dirname(__file__))
 path.append(dirname(__file__))
 
 import logging
-from delugeUtils import BASE_DIR
+from utils import BASE_DIR, ColorizeFilter
 
 logger = logging.getLogger('deluge_cli')
 logger.setLevel(logging.DEBUG)

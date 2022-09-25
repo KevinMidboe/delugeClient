@@ -9,7 +9,7 @@ import logging.config
 
 from deluge_client import DelugeRPCClient
 from sshtunnel import SSHTunnelForwarder
-from delugeUtils import getConfig, BASE_DIR
+from utils import getConfig, BASE_DIR
 
 from torrent import Torrent
 
