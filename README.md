@@ -4,18 +4,15 @@
 
 <h4 align="center"> A easy to use Deluge CLI that can connect to Deluge RPC (even over ssh) written entirely in python.</h4>
 
-<p align="center">
-  <a href="https://pypi.org/project/delugeClient-kevin/">
-    <img src="https://img.shields.io/pypi/v/delugeClient-kevin" />
-  </a>
-  <a href="https://snyk.io/test/github/kevinmidboe/delugeclient?targetFile=requirements.txt">
-  	<img src="https://snyk.io/test/github/kevinmidboe/delugeclient/badge.svg?targetFile=requirements.txt" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/kevinmidboe/delugeclient?targetFile=requirements.txt" style="max-width:100%;">
-  </a>
-  
-  <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="">
-  </a>
-</p>
+| Tested version | PyPi package | Drone CI |
+|:--------|:------|:------|:------------|
+| [![PyVersion](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/) | [![PyPI](https://img.shields.io/pypi/v/delugeClient_kevin)](https://pypi.org/project/delugeClient_kevin/) | [![Build Status](https://drone.schleppe.cloud/api/badges/KevinMidboe/delugeClient/status.svg)](https://drone.schleppe.cloud/KevinMidboe/delugeClient)
+
+
+| Known vulnerabilities | License |
+|:--------|:------|
+| [![Known Vulnerabilities](https://snyk.io/test/github/kevinmidboe/delugeClient/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/kevinmidboe/delugeClient?targetFile=requirements.txt) |[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 
 <p align="center">
   <a href="#abstract">Abstract</a> •
