@@ -37,7 +37,7 @@ from pprint import pprint
 
 from deluge import Deluge
 from utils import ColorizeFilter, BASE_DIR
-from __init__ import __version__
+from __version__ import __version__
 
 logger = logging.getLogger('deluge_cli')
 logger.setLevel(logging.DEBUG)

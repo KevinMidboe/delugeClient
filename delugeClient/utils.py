@@ -50,7 +50,7 @@ def getConfig():
   for key, value in requiredParameters:
     if value == '':
       logger.error('Missing value for variable: "{}" in config: \
-"$HOME/.config/delugeClient/config.ini".'.format(key))
+"{}.'.format(key, user_config_dir))
       exit(1)
 
   return config
