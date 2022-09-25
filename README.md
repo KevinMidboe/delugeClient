@@ -5,7 +5,7 @@
 <h4 align="center"> A easy to use Deluge CLI that can connect to Deluge RPC (even over ssh) written entirely in python.</h4>
 
 | Tested version | PyPi package | Drone CI |
-|:--------|:------|:------|:------------|
+|:--------|:------|:------|
 | [![PyVersion](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/) | [![PyPI](https://img.shields.io/pypi/v/delugeClient_kevin)](https://pypi.org/project/delugeClient_kevin/) | [![Build Status](https://drone.schleppe.cloud/api/badges/KevinMidboe/delugeClient/status.svg)](https://drone.schleppe.cloud/KevinMidboe/delugeClient)
 
 
