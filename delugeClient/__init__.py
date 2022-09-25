@@ -3,7 +3,7 @@ from sys import path
 
 path.append(os.path.dirname(__file__))
 
-__version__=0.1
+path.append(dirname(__file__))
 
 import logging
 from delugeUtils import BASE_DIR
