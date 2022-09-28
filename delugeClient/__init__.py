@@ -14,12 +14,9 @@ logger.setLevel(logging.DEBUG)
 
 fh = logging.FileHandler(join(BASE_DIR, 'deluge_cli.log'))
 fh.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
 
 formatter = logging.Formatter('%(asctime)s %(levelname)8s %(name)s | %(message)s')
 fh.setFormatter(formatter)
 
 logger.addHandler(fh)
-logger.addHandler(ch)
 logger.addFilter(ColorizeFilter())
