@@ -19,6 +19,14 @@ def split_words(string):
    logger.debug('Splitting input: {} (type: {}) with split_words'.format(string, type(string)))
    return re.findall(r"[\w\d']+", string.lower())
 
+def responseToString(response=None):
+   try:
+      response = response.decode('utf-8')
+   except (UnicodeDecodeError, AttributeError):
+      pass
+
+   return response
+
 class Deluge(object):
    """docstring for ClassName"""
    def __init__(self):
@@ -46,7 +54,7 @@ class Deluge(object):
       return torrents
 
    def _connect(self):
-      logger.info('Checking if script on same server as deluge RPC')
+      logger.debug('Checking if script on same server as deluge RPC')
       if self.host != 'localhost' and self.host is not None:
          try:
             if self.password:
@@ -66,11 +74,14 @@ class Deluge(object):
 
    def add(self, url):
       logger.info('Adding magnet with url: {}.'.format(url))
+      response = None
       if (url.startswith('magnet')):
-         return self.client.call('core.add_torrent_magnet', url, {})
+         response = self.client.call('core.add_torrent_magnet', url, {})
       elif url.startswith('http'):
          magnet = self.getMagnetFromFile(url)
-         return self.client.call('core.add_torrent_magnet', magnet, {})
+         response = self.client.call('core.add_torrent_magnet', magnet, {})
+
+      return responseToString(response.decode('utf-8'))
 
    def get_all(self, _filter=None):
       if (type(_filter) is list and len(_filter)):
@@ -110,24 +121,33 @@ class Deluge(object):
          response = self.client.call('core.resume_torrent', [id])
       else:
          response = self.client.call('core.pause_torrent', [id])
-      return response
+      return responseToString(response)
 
-   def remove(self, name, destroy=False):
+   def removeByName(self, name, destroy=False):
       matches = list(filter(lambda t: t.name == name, self.get_all()))
       logger.info('Matches for {}: {}'.format(name, matches))
       
-      if (len(matches) > 1):
+      if len(matches) > 1:
          raise ValueError('Multiple files found matching key. Unable to remove.')
-      elif (len(matches) == 1):
+      elif len(matches) == 1:
          torrent = matches[0]
-         response = self.client.call('core.remove_torrent', torrent.key, destroy)
+         response = self.remove(torrent.key, destroy)
          logger.info('Response: {}'.format(str(response)))
 
-         if (response == False):
+         if response == False:
             raise AttributeError('Unable to remove torrent.')
-         return response
+         return responseToString(response)
       else:
          logger.error('ERROR. No torrent found with that name.')
+
+   def remove(self, id, destroy=False):
+      response = self.client.call('core.remove_torrent', id, destroy)
+      logger.info('Response: {}'.format(str(response)))
+
+      if response == False:
+         raise AttributeError('Unable to remove torrent.')
+
+      return responseToString(response)
 
    def filterOnValue(self, torrents, value):
       filteredTorrents = []
@@ -155,7 +175,7 @@ class Deluge(object):
 
    def __del__(self):
       if hasattr(self, 'tunnel'):
-         logger.info('Closing ssh tunnel')
+         logger.debug('Closing ssh tunnel')
          self.tunnel.stop()
 
    def getMagnetFromFile(self, url):

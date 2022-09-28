@@ -66,12 +66,13 @@ def main():
   # Set logging level for streamHandler
   if arguments['--debug']:
     ch.setLevel(logging.DEBUG)
+  elif arguments['--info']:
+    ch.setLevel(logging.INFO)
   elif arguments['--warning']:
     ch.setLevel(logging.WARNING)
   elif arguments['--error']:
     ch.setLevel(logging.ERROR)
 
-  logger.info('Deluge client')
   logger.debug(arguments)
 
   # Get config settings
@@ -85,16 +86,16 @@ def main():
   response = None
 
   if arguments['add']:
-    logger.info('Add cmd selected with link {}'.format(magnet))
     response = deluge.add(magnet)
 
     if response is not None:
-      logger.info('Successfully added torrent.\nResponse from deluge: {}'.format(response))
+      msg = 'Successfully added torrent with id: {}'.format(response)
+      logger.info(msg)
     else:
       logger.warning('Add response returned empty: {}'.format(response))
 
   elif arguments['search']:
-    logger.info('Search cmd selected for query: {}'.format(query))
+    logger.debug('Search cmd selected for query: {}'.format(query))
     response = deluge.search(query)
     if response is not None or response != '[]':
       logger.info('Search found {} torrents'.format(len(response)))
@@ -102,19 +103,19 @@ def main():
       logger.info('Empty response for search query.')
 
   elif arguments['progress']:
-    logger.info('Progress cmd selected.')
+    logger.debug('Progress cmd selected.')
     response = deluge.progress()
 
   elif arguments['get']:
-    logger.info('Get cmd selected for id: {}'.format(_id))
+    logger.debug('Get cmd selected for id: {}'.format(_id))
     response = deluge.get(_id)
 
   elif arguments['ls']:
-    logger.info('List cmd selected')
+    logger.debug('List cmd selected')
     response = deluge.get_all(_filter=_filter)
 
   elif arguments['toggle']:
-    logger.info('Toggling id: {}'.format(_id))
+    logger.debug('Toggling id: {}'.format(_id))
     deluge.togglePaused(_id)
 
   elif arguments['rm']:
@@ -132,15 +133,15 @@ def main():
 
   try:
     if arguments['--json']:
-      if len(response) > 1:
-        print('[{}]'.format(','.join([t.toJSON() for t in response])))
-      else:
-        print(response[0].toJSON())
+      print('[{}]'.format(','.join([t.toJSON() for t in response])))
+    elif response:
+      print(response)
+
   except KeyError as error:
     logger.error('Unexpected error while trying to print')
     raise error
 
-  return response
+  sys.exit(0)
 
 if __name__ == '__main__':
   main()
