@@ -3,20 +3,22 @@
 
 """Custom delugeRPC client
 Usage:
-   deluge_cli add MAGNET [DIR] [--json | --debug | --warning | --error]
-   deluge_cli search NAME [--json]
-   deluge_cli get  TORRENT [--json | --debug | --warning | --error]
+   deluge_cli add MAGNET [DIR] [--json | --debug | --info | --warning | --error]
+   deluge_cli search QUERY [--json]
+   deluge_cli get ID [--json | --debug | --warning | --error]
    deluge_cli ls [--downloading | --seeding | --paused | --json]
    deluge_cli toggle TORRENT
    deluge_cli progress [--json]
-   deluge_cli rm NAME [--destroy] [--debug | --warning | --error]
+   deluge_cli rm ID [--destroy] [--debug | --warning | --error]
    deluge_cli (-h | --help)
    deluge_cli --version
 
 Arguments:
    MAGNET        Magnet link to add
    DIR           Directory to save to
-   TORRENT       A selected torrent
+   ID            A torrent hash
+   QUERY         Query search string
+
 
 Options:
    -h --help     Show this screen
@@ -75,10 +77,9 @@ def main():
   # Get config settings
   deluge = Deluge()
 
-  _id = arguments['TORRENT']
-  query = arguments['NAME']
+  _id = arguments['ID']
   magnet = arguments['MAGNET']
-  name = arguments['NAME']
+  query = arguments['QUERY']
   _filter = [ a[2:] for a in ['--downloading', '--seeding', '--paused'] if arguments[a] ]
 
   response = None
@@ -118,11 +119,16 @@ def main():
 
   elif arguments['rm']:
     destroy = arguments['--destroy']
-    logger.info('Remove by name: {}.'.format(name))
+    logger.debug('Remove by id: {}.'.format(_id))
 
     if destroy:
       logger.info('Destroy set, removing files')
-      deluge.remove(name, destroy)
+
+    if not _id:
+      logger.error("Unable to remove. No id supplied.")
+      return
+
+    deluge.remove(_id, destroy)
 
   try:
     if arguments['--json']:
