@@ -25,9 +25,9 @@ setup(
   install_requires=[
     'colored',
     'deluge-client',
-    'docopt',
     'requests',
     'sshtunnel',
+    'typer',
     'websockets'
   ],
   classifiers=[

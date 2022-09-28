@@ -81,7 +81,7 @@ class Deluge(object):
          magnet = self.getMagnetFromFile(url)
          response = self.client.call('core.add_torrent_magnet', magnet, {})
 
-      return responseToString(response.decode('utf-8'))
+      return responseToString(response)
 
    def get_all(self, _filter=None):
       if (type(_filter) is list and len(_filter)):
@@ -101,7 +101,7 @@ class Deluge(object):
       torrentNamesMatchingQuery = []
       if len(allTorrents):
          for torrent in allTorrents:
-            if query in torrent.name:
+            if query in torrent.name.lower():
                torrentNamesMatchingQuery.append(torrent)
 
          allTorrents = torrentNamesMatchingQuery
@@ -113,14 +113,19 @@ class Deluge(object):
 
    def get(self, id):
       response = self.client.call('core.get_torrent_status', id, {})
+      if response == {}:
+         logger.warning('No torrent with id: {}'.format(id))
+         return None
+
       return Torrent.fromDeluge(response)
 
-   def togglePaused(self, id):
+   def toggle(self, id):
       torrent = self.get(id)
       if (torrent.paused):
          response = self.client.call('core.resume_torrent', [id])
       else:
          response = self.client.call('core.pause_torrent', [id])
+
       return responseToString(response)
 
    def removeByName(self, name, destroy=False):
@@ -160,23 +165,12 @@ class Deluge(object):
          filteredTorrents.append(value_template)
       return filteredTorrents
 
-   def progress(self):
-      attributes = ['progress', 'eta', 'state', 'finished']
-      all_torrents = self.get_all()
-
-      torrents = []
-      for i, attribute in enumerate(attributes):
-         if i < 1:
-            torrents = self.filterOnValue(all_torrents, attribute)
-            continue
-         torrents = [dict(e, **v) for e,v in zip(torrents, self.filterOnValue(all_torrents, attribute))]
-
-      return torrents
-
    def __del__(self):
-      if hasattr(self, 'tunnel'):
+      self.client.disconnect()
+
+      if hasattr(self, 'tunnel') and self.tunnel.is_active:
          logger.debug('Closing ssh tunnel')
-         self.tunnel.stop()
+         self.tunnel.stop(True)
 
    def getMagnetFromFile(self, url):
       logger.info('File url found, fetching magnet.')
