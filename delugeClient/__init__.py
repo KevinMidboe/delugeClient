@@ -10,7 +10,6 @@ import logging
 from utils import BASE_DIR
 
 def addHandler(handler):
-  # handler.setLevel(logging.INFO)
   handler.setFormatter(formatter)
   logger.addHandler(handler)
 

@@ -7,8 +7,8 @@ import logging
 import requests
 import logging.config
 
-from deluge_client import DelugeRPCClient
-from sshtunnel import SSHTunnelForwarder
+from deluge_client import DelugeRPCClient, FailedToReconnectException
+from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
 from utils import getConfig, BASE_DIR
 
 from torrent import Torrent
@@ -41,7 +41,19 @@ class Deluge(object):
       self.ssh_pkey = config['ssh']['pkey']
       self.ssh_password = config['ssh']['password']
 
-      self._connect()
+      try:
+         self._connect()
+      except FailedToReconnectException:
+         logger.error("Unable to connect to deluge, make sure it's running")
+         sys.exit(1)
+      except ConnectionRefusedError:
+         logger.error("Unable to connect to deluge, make sure it's running")
+         sys.exit(1)
+      except BaseException as error:
+         logger.error("Unable to connect to deluge, make sure it's running")
+         if 'nodename nor servname provided' in str(error):
+            sys.exit(1)
+         raise error
 
    def freeSpace(self):
       return self.client.call('core.get_free_space')
@@ -53,48 +65,67 @@ class Deluge(object):
          torrents.append(Torrent.fromDeluge(torrent))
       return torrents
 
-   def _connect(self):
+   def establishSSHTunnel(self):
       logger.debug('Checking if script on same server as deluge RPC')
-      if self.host != 'localhost' and self.host is not None:
-         try:
-            if self.password:
-              self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_password=self.ssh_password, 
-                 local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
-            elif self.pkey is not None:
-              self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_pkey=self.ssh_pkey, 
-                 local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
-         except ValueError as error:
-            logger.error("Either password or private key path must be set in config.")
-            raise error
 
+      if self.password is not None:
+        self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_password=self.ssh_password, 
+           local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
+      elif self.pkey is not None:
+        self.tunnel = SSHTunnelForwarder(self.ssh_host, ssh_username=self.ssh_user, ssh_pkey=self.ssh_pkey, 
+           local_bind_address=('localhost', self.port), remote_bind_address=('localhost', self.port))
+      else:
+         logger.error("Either password or private key path must be set in config.")
+         return
+
+      try:
          self.tunnel.start()
+      except BaseSSHTunnelForwarderError as sshError:
+         logger.warning("SSH host {} online, check your connection".format(self.ssh_host))
+         return
+
+   def _call(self, command, *args):
+      try:
+         return self.client.call(command, *args)
+      except ConnectionRefusedError as error:
+         logger.error("Unable to run command, connection to deluge seems to be offline")
+      except FailedToReconnectException as error:
+         logger.error("Unable to run command, reconnection to deluge failed")
+
+   def _connect(self):
+      if self.host != 'localhost' and self.host is not None:
+         self.establishSSHTunnel()
 
       self.client = DelugeRPCClient(self.host, self.port, self.user, self.password)
       self.client.connect()
 
    def add(self, url):
-      logger.info('Adding magnet with url: {}.'.format(url))
       response = None
       if (url.startswith('magnet')):
-         response = self.client.call('core.add_torrent_magnet', url, {})
+         response = self._call('core.add_torrent_magnet', url, {})
       elif url.startswith('http'):
          magnet = self.getMagnetFromFile(url)
-         response = self.client.call('core.add_torrent_magnet', magnet, {})
+         response = self._call('core.add_torrent_magnet', magnet, {})
 
       return responseToString(response)
 
    def get_all(self, _filter=None):
+      response = None
       if (type(_filter) is list and len(_filter)):
          if ('seeding' in _filter):
-            response = self.client.call('core.get_torrents_status', {'state': 'Seeding'}, [])
+            response = self._call('core.get_torrents_status', {'state': 'Seeding'}, [])
          elif ('downloading' in _filter):
-            response = self.client.call('core.get_torrents_status', {'state': 'Downloading'}, [])
+            response = self._call('core.get_torrents_status', {'state': 'Downloading'}, [])
          elif ('paused' in _filter):
-            response = self.client.call('core.get_torrents_status', {'paused': 'true'}, [])
+            response = self._call('core.get_torrents_status', {'paused': 'true'}, [])
       else:
          response = self.client.call('core.get_torrents_status', {}, [])
 
+      if response == {}:
+         return None
+
       return self.parseResponse(response)
+
 
    def search(self, query):
       allTorrents = self.get_all()
@@ -112,7 +143,7 @@ class Deluge(object):
       return [ t for t in self.get_all() if (set(q_list) <= set(split_words(t.name))) ]
 
    def get(self, id):
-      response = self.client.call('core.get_torrent_status', id, {})
+      response = self._call('core.get_torrent_status', id, {})
       if response == {}:
          logger.warning('No torrent with id: {}'.format(id))
          return None
@@ -121,10 +152,13 @@ class Deluge(object):
 
    def toggle(self, id):
       torrent = self.get(id)
+      if torrent is None:
+         return
+
       if (torrent.paused):
-         response = self.client.call('core.resume_torrent', [id])
+         response = self._call('core.resume_torrent', [id])
       else:
-         response = self.client.call('core.pause_torrent', [id])
+         response = self._call('core.pause_torrent', [id])
 
       return responseToString(response)
 
@@ -137,7 +171,7 @@ class Deluge(object):
       elif len(matches) == 1:
          torrent = matches[0]
          response = self.remove(torrent.key, destroy)
-         logger.info('Response: {}'.format(str(response)))
+         logger.debug('Response rm: {}'.format(str(response)))
 
          if response == False:
             raise AttributeError('Unable to remove torrent.')
@@ -146,13 +180,16 @@ class Deluge(object):
          logger.error('ERROR. No torrent found with that name.')
 
    def remove(self, id, destroy=False):
-      response = self.client.call('core.remove_torrent', id, destroy)
-      logger.info('Response: {}'.format(str(response)))
+      try:
+         response = self.client.call('core.remove_torrent', id, destroy)
+         logger.debug('Response from remove: {}'.format(str(response)))
+         return responseToString(response)
+      except BaseException as error:
+         if 'torrent_id not in session' in str(error):
+            logger.info('Unable to remove. No torrent with matching id')
+            return None
 
-      if response == False:
-         raise AttributeError('Unable to remove torrent.')
-
-      return responseToString(response)
+         raise error
 
    def filterOnValue(self, torrents, value):
       filteredTorrents = []
@@ -166,7 +203,9 @@ class Deluge(object):
       return filteredTorrents
 
    def __del__(self):
-      self.client.disconnect()
+      if hasattr(self, 'client') and self.client.connected:
+         logger.debug('Disconnected deluge rpc')
+         self.client.disconnect()
 
       if hasattr(self, 'tunnel') and self.tunnel.is_active:
          logger.debug('Closing ssh tunnel')
