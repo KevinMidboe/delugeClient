@@ -79,3 +79,20 @@ def convert(data):
   if isinstance(data, tuple):  return map(convert, data)
   json_data = json.dumps(data)
   return json_data
+
+def validHash(hash: str):
+  try:
+    return hash and len(hash) == 40 and int(hash, 16)
+  except ValueError:
+    return False
+
+import math
+
+def convertFilesize(size_bytes):
+ if size_bytes == None or size_bytes == 0:
+    return "0B"
+ size_name = ("B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB")
+ i = int(math.floor(math.log(size_bytes, 1024)))
+ p = math.pow(1024, i)
+ s = round(size_bytes / p, 2)
+ return "%s %s" % (s, size_name[i])
