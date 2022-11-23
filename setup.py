@@ -23,12 +23,11 @@ setup(
   long_description_content_type="text/markdown",
   url="https://github.com/kevinmidboe/delugeClient",
   install_requires=[
-    'colored',
-    'deluge-client',
-    'requests',
-    'sshtunnel',
-    'typer',
-    'websockets'
+    'colored>=1.4.4',
+    'deluge-client>=1.9.0',
+    'requests>=2.28.1',
+    'sshtunnel>=0.4.0',
+    'typer[all]>=0.7.0'
   ],
   classifiers=[
     'Programming Language :: Python',
