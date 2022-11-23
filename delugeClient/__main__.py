@@ -11,13 +11,12 @@ from pprint import pprint
 from deluge import Deluge
 from utils import ColorizeFilter, BASE_DIR
 from __version__ import __version__
+from __init__ import addHandler
 
-logger = logging.getLogger('deluge_cli')
 ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
-logger.addHandler(ch)
-
-logger.addFilter(ColorizeFilter())
+ch.addFilter(ColorizeFilter())
+addHandler(ch)
+logger = logging.getLogger('deluge_cli')
 
 app = typer.Typer()
 deluge = Deluge()
@@ -115,11 +114,14 @@ def version():
   '''
   print(__version__)
 
+# Runs before any command
 @app.callback()
 def defaultOptions(debug: bool = typer.Option(False, '--debug', help='Set log level to debug'), info: bool = typer.Option(False, '--info', help='Set log level to info'), warning: bool = typer.Option(False, '--warning', help='Set log level to warning'), error: bool = typer.Option(False, '--error', help='Set log level to error')):
-  ch.setLevel(logging.WARNING)
+  ch.setLevel(logging.INFO)
 
-  if error == True:
+  if '--json' in sys.argv:
+    ch.setLevel(logging.CRITICAL)
+  elif error == True:
     ch.setLevel(logging.ERROR)
   elif warning == True:
     ch.setLevel(logging.WARNING)

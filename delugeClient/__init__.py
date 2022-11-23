@@ -7,16 +7,17 @@ from os.path import dirname, join
 path.append(dirname(__file__))
 
 import logging
-from utils import BASE_DIR, ColorizeFilter
+from utils import BASE_DIR
+
+def addHandler(handler):
+  # handler.setLevel(logging.INFO)
+  handler.setFormatter(formatter)
+  logger.addHandler(handler)
 
 logger = logging.getLogger('deluge_cli')
 logger.setLevel(logging.DEBUG)
 
 fh = logging.FileHandler(join(BASE_DIR, 'deluge_cli.log'))
-fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s| %(levelname)s | %(message)s')
 
-formatter = logging.Formatter('%(asctime)s %(levelname)8s %(name)s | %(message)s')
-fh.setFormatter(formatter)
-
-logger.addHandler(fh)
-logger.addFilter(ColorizeFilter())
+addHandler(fh)

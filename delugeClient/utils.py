@@ -60,7 +60,7 @@ class ColorizeFilter(logging.Filter):
   Class for setting specific colors to levels of severity for log output
   """
   color_by_level = {
-    10: 'chartreuse_3b',
+    10: 'cyan',
     20: 'white',
     30: 'orange_1',
     40: 'red'
