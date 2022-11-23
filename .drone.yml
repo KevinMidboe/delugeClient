@@ -9,6 +9,6 @@ platform:
 
 steps:
   - name: Build package
-    image: python:3.8
+    image: python:3.10
     commands:
       - make build

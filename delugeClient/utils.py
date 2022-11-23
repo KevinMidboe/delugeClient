@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.10
 # -*- coding: utf-8 -*-
 # @Author: kevinmidboe
 # @Date:   2018-04-17 19:55:38

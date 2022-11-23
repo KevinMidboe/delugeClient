@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3.10
 # -*- encoding: utf-8 -*-
 
 from sys import path

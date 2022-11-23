@@ -6,7 +6,7 @@
 
 | Tested version | PyPi package | Drone CI |
 |:--------|:------|:------|
-| [![PyVersion](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/) | [![PyPI](https://img.shields.io/pypi/v/delugeClient_kevin)](https://pypi.org/project/delugeClient_kevin/) | [![Build Status](https://drone.schleppe.cloud/api/badges/KevinMidboe/delugeClient/status.svg)](https://drone.schleppe.cloud/KevinMidboe/delugeClient)
+| [![PyVersion](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/) | [![PyPI](https://img.shields.io/pypi/v/delugeClient_kevin)](https://pypi.org/project/delugeClient_kevin/) | [![Build Status](https://drone.schleppe.cloud/api/badges/KevinMidboe/delugeClient/status.svg)](https://drone.schleppe.cloud/KevinMidboe/delugeClient)
 
 
 | Known vulnerabilities | License |
@@ -52,10 +52,10 @@ After you have downloaded this project go to it in your terminal by going to the
 The to setup a virtual environment enter this:
 
 ```
- $ virtualenv -p python3.6 env
+ $ virtualenv -p python3.10 env
 ```
 
- > If you get an error now it might be because you don't have python3.6, please make sure you have python version 3.6 if else you can download it from [here](https://www.python.org/downloads/)
+ > If you get an error now it might be because you don't have python3.10, please make sure you have python version 3.10 if else you can download it from [here](https://www.python.org/downloads/)
 
 
 First we navigate to the folder we downloaded.

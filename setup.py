@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.10
 # -*- encoding: utf-8 -*-
 from setuptools import setup, find_packages
 from sys import path
@@ -16,7 +16,7 @@ setup(
   package_data={
     'delugeClient': ['default_config.ini'],
   },
-  python_requires=">=3.6",
+  python_requires=">=3.10",
   author="KevinMidboe",
   description="Deluge client with custom functions written in python",
   long_description=long_description,
@@ -33,7 +33,7 @@ setup(
   classifiers=[
     'Programming Language :: Python',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.10',
   ],
   entry_points={
     'console_scripts': [
