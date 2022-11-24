@@ -43,6 +43,8 @@ steps:
     commands: 
     - make dist
     - pip3 install pipenv
+    - pipenv install
+    - pipenv sync
     - pipenv install twine
     - pipenv run twine upload --repository delugeClient-kevin dist/*
 
@@ -51,6 +53,8 @@ steps:
     commands: 
     - make dist
     - pip3 install pipenv
+    - pipenv install
+    - pipenv sync
     - pipenv install twine
     # - pipenv run twine upload dist/*
 
