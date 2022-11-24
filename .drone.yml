@@ -18,7 +18,7 @@ steps:
     commands:
     - make dist
     - pip3 install pipenv
-    - install dist/delugeClient-kevin-*-py3-none-any.whl
+    - pipenv install dist/delugeClient-kevin-*-py3-none-any.whl
 #     - pipenv install pytest
 
 #   - name: Run tests
@@ -46,7 +46,7 @@ steps:
     commands:
     - make dist
     - pip3 install pipenv
-    - install dist/delugeClient-kevin-*-py3-none-any.whl
+    - pipenv install dist/delugeClient-kevin-*-py3-none-any.whl
 #     - pipenv install pytest
 
 #   - name: Run tests
