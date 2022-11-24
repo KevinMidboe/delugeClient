@@ -38,14 +38,19 @@ platform:
   arch: amd64
 
 steps:
+  - name: Newer version to publish?
+    image: python:3.10
+    commands:
+      - bash publish_version?.sh
+
   - name: Test PyPi publish
     image: python:3.10
     commands: 
-    - make dist
-    - pip3 install -r requirements.txt
-    - pip3 install twine
-    - twine check dist/*
-    - twine upload --repository delugeClient-kevin dist/*
+      - make dist
+      - pip3 install -r requirements.txt
+      - pip3 install twine
+      - twine check dist/*
+      - twine upload --repository delugeClient-kevin dist/*
 
   - name: PyPi publish
     image: python:3.10
