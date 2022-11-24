@@ -41,6 +41,7 @@ steps:
   - name: Newer version to publish?
     image: python:3.10
     commands:
+      - pip3 install delugeClient-kevin
       - bash publish_version?.sh
 
   - name: Test PyPi publish
