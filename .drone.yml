@@ -20,7 +20,7 @@ steps:
     - pip3 install pipenv
     - pipenv install
     - pipenv sync
-    - pipenv install dist/delugeClient-kevin-0.3.1-py3-none-any.whl
+    - pipenv install dist/delugeClient_kevin-0.3.1-py3-none-any.whl
 #     - pipenv install pytest
 
 #   - name: Run tests
@@ -50,7 +50,7 @@ steps:
     - pip3 install pipenv
     - pipenv install
     - pipenv sync
-    - pipenv install dist/delugeClient-kevin-0.3.1-py3-none-any.whl
+    - pipenv install dist/delugeClient_kevin-0.3.1-py3-none-any.whl
 #     - pipenv install pytest
 
 #   - name: Run tests
