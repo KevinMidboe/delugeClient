@@ -31,36 +31,6 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: Build and test arm64
-
-platform:
-  os: linux
-  arch: arm64
-
-steps:
-  - name: Build source
-    image: python:3.10
-    commands:
-    - make build
-
-  - name: Install
-    image: python:3.10
-    commands:
-    - make dist
-    - pip3 install pipenv
-    - pipenv install
-    - pipenv sync
-    - pipenv install dist/delugeClient_kevin-0.3.1-py3-none-any.whl
-#     - pipenv install pytest
-
-#   - name: Run tests
-#     image: python:3.10
-#     commands:
-#       pipenv run pytest
-
----
-kind: pipeline
-type: docker
 name: Publish package to PyPi
 
 platform:
@@ -83,3 +53,6 @@ steps:
     - pip3 install pipenv
     - pipenv install twine
     # - pipenv run twine upload dist/*
+
+depends_on:
+  - Build and test amd64
