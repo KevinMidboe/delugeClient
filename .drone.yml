@@ -1,14 +1,81 @@
 ---
 kind: pipeline
 type: docker
-name: delugeClient
+name: Build and test amd64
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-  - name: Build package
-    image: python:3.10
-    commands:
-      - make build
+- name: Build source
+  image: python:3.10
+  commands:
+  - make build
+
+- name: Install
+  image: python:3.10
+  commands:
+  - make dist
+  - pip3 install pipenv
+  - install dist/delugeClient-kevin-*-py3-none-any.whl
+#   - pipenv install pytest
+
+# - name: Run tests
+#   image: python:3.10
+#   commands:
+#     pipenv run pytest
+
+---
+kind: pipeline
+type: docker
+name: Build and test arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: Build source
+  image: python:3.10
+  commands:
+  - make build
+
+- name: Install
+  image: python:3.10
+  commands:
+  - make dist
+  - pip3 install pipenv
+  - install dist/delugeClient-kevin-*-py3-none-any.whl
+#   - pipenv install pytest
+
+# - name: Run tests
+#   image: python:3.10
+#   commands:
+#     pipenv run pytest
+
+---
+kind: pipeline
+type: docker
+name: publish package to PyPi
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: Test PyPi publish
+  image: python:3.10
+  commands: 
+  - make dist
+  - pip3 install pipenv
+  - pipenv install twine
+  - pipenv run twine upload --repository delugeClient-kevin dist/*
+
+- name: Test PyPi publish
+  image: python:3.10
+  commands: 
+  - make dist
+  - pip3 install pipenv
+  - pipenv install twine
+  # - pipenv run twine upload dist/*
