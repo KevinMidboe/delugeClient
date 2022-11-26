@@ -17,10 +17,8 @@ steps:
     image: python:3.10
     commands:
     - make dist
-    - pip3 install pipenv
-    - pipenv install
-    - pipenv sync
-    - pipenv install dist/delugeClient_kevin-0.3.1-py3-none-any.whl
+    - pip3 install -r requirements.txt
+    - pip3 install dist/*.whl
 #     - pipenv install pytest
 
 #   - name: Run tests
