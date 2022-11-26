@@ -44,24 +44,12 @@ steps:
       - pip3 install delugeClient-kevin -q -q
       - bash publish_version?.sh
 
-  - name: Test PyPi publish
-    image: python:3.10
-    commands: 
-      - make dist
-      - pip3 install -r requirements.txt
-      - pip3 install twine
-      - twine check dist/*
-      - twine upload --repository delugeClient-kevin dist/*
-
   - name: PyPi publish
     image: python:3.10
     commands: 
     - make dist
-    - pip3 install pipenv
-    - pipenv install
-    - pipenv sync
-    - pipenv install twine
-    # - pipenv run twine upload dist/*
+    - pip3 install twine
+    - twine upload dist/*
 
 depends_on:
   - Build and test amd64
