@@ -1,14 +1,66 @@
 ---
 kind: pipeline
 type: docker
-name: delugeClient
+name: Build and test amd64
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-  - name: Build package
+  - name: Build source
     image: python:3.10
     commands:
-      - make build
+    - make build
+
+  - name: Install
+    image: python:3.10
+    commands:
+    - make dist
+    - pip3 install -r requirements.txt
+    - pip3 install dist/*.whl
+#     - pipenv install pytest
+
+#   - name: Run tests
+#     image: python:3.10
+#     commands:
+#       pipenv run pytest
+
+---
+kind: pipeline
+type: docker
+name: Publish package to PyPi
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: Newer version to publish?
+    image: python:3.10
+    commands:
+      - pip3 install delugeClient-kevin -q -q
+      - bash publish_version?.sh
+
+  - name: PyPi publish
+    image: python:3.10
+    commands: 
+    - make dist
+    - pip3 install twine
+    - twine upload dist/*
+
+depends_on:
+  - Build and test amd64
+
+trigger:
+  branch:
+    - master
+  event:
+    exclude:
+      - pull_request
+
+---
+kind: signature
+hmac: 08793426ddd2274e2de166144dc15cd63fe6a2c0fd47382d28f20ececee84898
+
+...

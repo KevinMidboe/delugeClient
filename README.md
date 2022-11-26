@@ -4,23 +4,20 @@
 
 <h4 align="center"> A easy to use Deluge CLI that can connect to Deluge RPC (even over ssh) written entirely in python.</h4>
 
-| Tested version | PyPi package | Drone CI |
+| Tested version | PyPi package | License |
 |:--------|:------|:------|
-| [![PyVersion](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/) | [![PyPI](https://img.shields.io/pypi/v/delugeClient_kevin)](https://pypi.org/project/delugeClient_kevin/) | [![Build Status](https://drone.schleppe.cloud/api/badges/KevinMidboe/delugeClient/status.svg)](https://drone.schleppe.cloud/KevinMidboe/delugeClient)
+| [![PyVersion](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/) | [![PyPI](https://img.shields.io/pypi/v/delugeClient_kevin)](https://pypi.org/project/delugeClient_kevin/) |[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-
-| Known vulnerabilities | License |
+| Drone CI | Known vulnerabilities |
 |:--------|:------|
-| [![Known Vulnerabilities](https://snyk.io/test/github/kevinmidboe/delugeClient/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/kevinmidboe/delugeClient?targetFile=requirements.txt) |[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
+| [![Build Status](https://drone.schleppe.cloud/api/badges/KevinMidboe/delugeClient/status.svg)](https://drone.schleppe.cloud/KevinMidboe/delugeClient) | [![Known Vulnerabilities](https://snyk.io/test/github/kevinmidboe/delugeClient/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/kevinmidboe/delugeClient?targetFile=requirements.txt)
 
 <p align="center">
   <a href="#abstract">Abstract</a> •
-  <a href="#setup_virtualenv">Setup virtualenv</a> •
-  <a href="#configure">Configure</a> •
-  <a href="#installation">Install dependencies</a> •
+  <a href="#install">Install</a> •
   <a href="#usage">Usage</a> •
-  <a href="#running">Running</a> •
+  <a href="#setup_virtualenv">Setup Virtual Environment</a> •
+  <a href="#configure">Configure</a> •
   <a href="#contributing">Contributing</a>
 </p>
 
@@ -28,6 +25,44 @@
 ## <a name="abstract"></a> Abstract
 Create a deluge python client for interfacing with deluge for common tasks like listing, adding, removing and setting download directory for torrents. 
 
+## <a name="install"></a> Install
+Install from source:
+```bash
+python3 setup.py install
+```
+
+Install from pip:
+```bash
+pip3 install delugeClient-kevin
+```
+
+## <a name="usage"></a> Usage
+View delugeClient cli options with `delugeClient --help`:
+
+```
+ Usage: python -m delugeclient [OPTIONS] COMMAND [ARGS]...
+
+╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --debug                       Set log level to debug                                                            │
+│ --info                        Set log level to info                                                             │
+│ --warning                     Set log level to warning                                                          │
+│ --error                       Set log level to error                                                            │
+│ --install-completion          Install completion for the current shell.                                         │
+│ --show-completion             Show completion for the current shell, to copy it or customize the installation.  │
+│ --help                        Show this message and exit.                                                       │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ──────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ add                Add magnet torrent                                                                           │
+│ disk               Get free disk space                                                                          │
+│ get                Get torrent by id or hash                                                                    │
+│ ls                 List all torrents                                                                            │
+│ remove             Remove torrent by id or hash                                                                 │
+│ rm                 Remove torrent by name                                                                       │
+│ search             Search for string segment in torrent name                                                    │
+│ toggle             Toggle torrent download state                                                                │
+│ version            Print package version                                                                        │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
 
 ## <a name="setup_virtualenv"></a> Setup Virtual Environment
 Virtual environment allows us to create a local environment for the requirements needed. Because pip does not download packages already downloaded to your system, we can use virtualenv to save our packages in the project folder.
@@ -41,7 +76,7 @@ To install virtualenv, simply run:
 ```
 
 
-### Usage
+### Virtualenv setup
 After you have downloaded this project go to it in your terminal by going to the folder you downloaded and typing the following:
 
 
@@ -57,8 +92,6 @@ The to setup a virtual environment enter this:
 
  > If you get an error now it might be because you don't have python3.10, please make sure you have python version 3.10 if else you can download it from [here](https://www.python.org/downloads/)
 
-
-First we navigate to the folder we downloaded.
 
 Then we use the ```virtualenv``` command to create a ```env``` subdirectory in our project. This is where pip will download everything to and where we can add other specific python versions. Then we need to *activate* our virtual environment by doing:
 
@@ -95,51 +128,6 @@ Then you need to change the HOST and PORT to reflect the address for your deluge
 ```
  $ cat /home/USER/.config/deluge/auth
 ```
-
-
-## <a name="install"></a> Install Required Dependencies
-Now that we have our virutalenv set up and activated we want to install all the necessary packages listed in `requirements.txt`. To install it's dependencies do the following:
-
-```
- $ pip install -r requirements.txt
-```
-
-Now we have our neccessary packages installed!
-
-
-## <a name="usage"></a> Usage
-
-```
-Custom delugeRPC client
-Usage:
-   deluge_cli add MAGNET [DIR] [--debug | --warning | --error]
-   deluge_cli get TORRENT
-   deluge_cli ls [--downloading | --seeding | --paused]
-   deluge_cli toggle TORRENT
-   deluge_cli rm TORRENT [--debug | --warning | --error]
-   deluge_cli (-h | --help)
-   deluge_cli --version
-
-Arguments:
-   MAGNET        Magnet link to add
-   DIR           Directory to save to
-   TORRENT       A selected torrent
-
-Options:
-   -h --help     Show this screen
-   --version     Show version
-   --debug       Print all debug log
-   --warning     Print only logged warnings
-   --error       Print error messages (Error/Warning)
-```
-
-### <a name="running"></a> Running
-To interface with deluged :
-
-```
- $ ./deluge_cli.py ls
-```
-
 
 ## <a name="contributing"></a> Contributing
 - Fork it!

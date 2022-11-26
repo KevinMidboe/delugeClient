@@ -7,8 +7,13 @@ install:
 build:
 	python3 setup.py build
 
-dist:
+tarball:
 	python3 setup.py sdist
+
+wheel:
+	python3 setup.py bdist_wheel
+
+dist: tarball wheel
 
 upload: clean dist
 	twine upload dist/*
