@@ -56,4 +56,7 @@ depends_on:
 
 trigger:
   branch:
-  - master
+    - master
+  event:
+    exclude:
+      - pull_request
