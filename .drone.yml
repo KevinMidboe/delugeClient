@@ -65,3 +65,7 @@ steps:
 
 depends_on:
   - Build and test amd64
+
+trigger:
+  branch:
+  - master
