@@ -43,14 +43,14 @@ steps:
       - bash publish_version?.sh
 
   - name: PyPi verify
-    image: python3.10
+    image: python:3.10
     commands:
       - make dist
       - pip3 install twine
       - twine check dist/*
 
   - name: PyPi test publish
-    image: python3.10
+    image: python:3.10
     environment:
       TWINE_USERNAME:
         from_secret: TWINE_USERNAME
@@ -86,6 +86,6 @@ trigger:
 
 ---
 kind: signature
-hmac: f0bcccc150938c350ff774024538d6d4c7da56ce6724e16f36fb177709cc15a0
+hmac: 819ef0e296a78503c4ff1fb08a5a4f52d2d96ccc88cee60c44c7253860fc4971
 
 ...
