@@ -42,12 +42,36 @@ steps:
       - pip3 install delugeClient-kevin -q -q
       - bash publish_version?.sh
 
+  - name: PyPi verify
+    image: python:3.10
+    commands:
+      - make dist
+      - pip3 install twine
+      - twine check dist/*
+
+  - name: PyPi test publish
+    image: python:3.10
+    environment:
+      TWINE_USERNAME:
+        from_secret: TWINE_USERNAME
+      TWINE_PASSWORD:
+        from_secret: TWINE_TEST_PASSWORD
+    commands:
+      - make dist
+      - pip3 install twine
+      - twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
   - name: PyPi publish
     image: python:3.10
-    commands: 
-    - make dist
-    - pip3 install twine
-    - twine upload dist/*
+    environment:
+      TWINE_USERNAME:
+        from_secret: TWINE_USERNAME
+      TWINE_PASSWORD:
+        from_secret: TWINE_PASSWORD
+    commands:
+      - make dist
+      - pip3 install twine
+      - twine upload dist/*
 
 depends_on:
   - Build and test amd64
@@ -61,6 +85,6 @@ trigger:
 
 ---
 kind: signature
-hmac: 08793426ddd2274e2de166144dc15cd63fe6a2c0fd47382d28f20ececee84898
+hmac: 60604a21f35e11d078d5d381bbea8e25b903175c018ba9e6f4a4379285e89883
 
 ...
