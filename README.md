@@ -37,31 +37,38 @@ pip3 install delugeClient-kevin
 ```
 
 ## <a name="usage"></a> Usage
-View delugeClient cli options with `delugeClient --help`:
+View delugeClient cli options with `delugeclient --help`:
 
 ```
  Usage: python -m delugeclient [OPTIONS] COMMAND [ARGS]...
 
-╭─ Options ───────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ --debug                       Set log level to debug                                                            │
-│ --info                        Set log level to info                                                             │
-│ --warning                     Set log level to warning                                                          │
-│ --error                       Set log level to error                                                            │
-│ --install-completion          Install completion for the current shell.                                         │
-│ --show-completion             Show completion for the current shell, to copy it or customize the installation.  │
-│ --help                        Show this message and exit.                                                       │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Commands ──────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│ add                Add magnet torrent                                                                           │
-│ disk               Get free disk space                                                                          │
-│ get                Get torrent by id or hash                                                                    │
-│ ls                 List all torrents                                                                            │
-│ remove             Remove torrent by id or hash                                                                 │
-│ rm                 Remove torrent by name                                                                       │
-│ search             Search for string segment in torrent name                                                    │
-│ toggle             Toggle torrent download state                                                                │
-│ version            Print package version                                                                        │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ───────────────────────────────────────────────────────────────╮
+│ --debug                       Set log level to debug                    │
+│ --info                        Set log level to info                     │
+│ --warning                     Set log level to warning                  │
+│ --error                       Set log level to error                    │
+│ --install-completion          Install completion for the current shell. │
+│ --show-completion             Show completion for the current shell     │
+│ --help                        Show this message and exit.               │
+╰─────────────────────────────────────────────────────────────────────────╯
+╭─ Commands ──────────────────────────────────────────────────────────────╮
+│ add                Add magnet torrent                                   │
+│ disk               Get free disk space                                  │
+│ get                Get torrent by id or hash                            │
+│ ls                 List all torrents                                    │
+│ remove             Remove torrent by id or hash                         │
+│ rm                 Remove torrent by name                               │
+│ search             Search for string segment in torrent name            │
+│ toggle             Toggle torrent download state                        │
+│ version            Print package version                                │
+╰─────────────────────────────────────────────────────────────────────────╯
+```
+
+### Running from source
+Run from source for fun or during development using module flag:
+
+```
+python3 -m delugeClient --help
 ```
 
 ## <a name="setup_virtualenv"></a> Setup Virtual Environment

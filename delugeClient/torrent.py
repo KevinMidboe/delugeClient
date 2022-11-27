@@ -2,7 +2,7 @@ import json
 import logging
 from distutils.util import strtobool
 
-from utils import convert
+from delugeClient.utils import convert
 
 logger = logging.getLogger('deluge_cli')
 
