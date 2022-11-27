@@ -37,7 +37,7 @@ pip3 install delugeClient-kevin
 ```
 
 ## <a name="usage"></a> Usage
-View delugeClient cli options with `delugeClient --help`:
+View delugeClient cli options with `delugeclient --help`:
 
 ```
  Usage: python -m delugeclient [OPTIONS] COMMAND [ARGS]...
@@ -62,6 +62,13 @@ View delugeClient cli options with `delugeClient --help`:
 │ toggle             Toggle torrent download state                                                                │
 │ version            Print package version                                                                        │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+```
+
+### Running from source
+Run from source for fun or during development using module flag:
+
+```
+python3 -m delugeClient --help
 ```
 
 ## <a name="setup_virtualenv"></a> Setup Virtual Environment
