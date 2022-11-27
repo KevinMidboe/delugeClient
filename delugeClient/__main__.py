@@ -1,5 +1,4 @@
 #!/usr/bin/env python3.10
-
 import os
 import sys
 import signal
@@ -8,10 +7,10 @@ import logging
 import typer
 from pprint import pprint
 
-from deluge import Deluge
-from utils import ColorizeFilter, BASE_DIR, validHash, convertFilesize
-from __version__ import __version__
-from __init__ import addHandler
+from delugeClient.deluge import Deluge
+from delugeClient.utils import ColorizeFilter, BASE_DIR, validHash, convertFilesize
+from delugeClient.__version__ import __version__
+from delugeClient.__init__ import addHandler
 
 ch = logging.StreamHandler()
 ch.addFilter(ColorizeFilter())

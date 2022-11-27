@@ -9,9 +9,9 @@ import logging.config
 
 from deluge_client import DelugeRPCClient, FailedToReconnectException
 from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
-from utils import getConfig, BASE_DIR
 
-from torrent import Torrent
+from delugeClient.utils import getConfig, BASE_DIR
+from delugeClient.torrent import Torrent
 
 logger = logging.getLogger('deluge_cli')
 
