@@ -2,9 +2,10 @@
 # -*- encoding: utf-8 -*-
 
 from sys import path
-from os.path import dirname, join
+from os.path import dirname, join, abspath
 
-path.append(dirname(__file__))
+SCRIPT_DIR = dirname(abspath(__file__))
+path.append(dirname(SCRIPT_DIR))
 
 import logging
 from utils import BASE_DIR
