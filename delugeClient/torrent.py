@@ -44,5 +44,5 @@ class Torrent(object):
     return json.dumps(torrentDict)
 
   def __str__(self):
-    return "{} {} Progress: {}% ETA: {} State: {} Paused: {}".format(
-      self.key, self.name[:59].ljust(60), self.progress.rjust(5), self.eta.rjust(11), self.state.ljust(12), self.paused)
+    return "{} Progress: {}% ETA: {} State: {} Paused: {}".format(
+      self.name[:59].ljust(60), self.progress.rjust(5), self.eta.rjust(11), self.state.ljust(12), self.paused)
